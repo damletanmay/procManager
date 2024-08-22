@@ -1,0 +1,284 @@
+#!=/bin/bash
+
+# # PART 2: THE PRINTING OF PROCESSES
+# options covered
+# no option, -nd, -dd, -gc, -sb, -bz, -zd, -od, -so , -sz
+
+# # array
+process_ids=()
+i=0
+# read process_ids
+while read process_ids[$i]; do
+i=$((i+1))
+done < /home/damlet/Desktop/asp_assignment/assignment_2/ids.txt
+
+# # Test Cases
+
+# # documentation
+prc24s
+
+# # invalid input
+prc24s -asda 1212 1231 123 12213 12312 
+prc24s s
+prc24s -asas 12 12
+
+# # no option
+
+# # negative test cases
+prc24s -12 21
+prc24s -45566758968589 21
+prc24s 1234566666 12123123123123123123123123
+prc24s 10278 10247
+prc24s ${process_ids[1]} 10247
+prc24s ${process_ids[2]} ${process_ids[3]} # not rooted
+prc24s ${process_ids[4]} ${process_ids[5]} # not rooted
+prc24s ${process_ids[3]} ${process_ids[3]} # same id will show error
+
+
+# # positive test cases
+prc24s ${process_ids[1]} ${process_ids[15]} # rooted
+prc24s ${process_ids[5]} ${process_ids[12]} # rooted
+prc24s ${process_ids[0]} ${process_ids[3]} # rooted
+prc24s 2 12
+
+
+# # -nd
+# # prints pid of all non direct descendants of p
+
+# # negative test cases
+prc24s -nd 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Non Direct Decendents"
+echo ${process_ids[11]}
+echo ${process_ids[15]}
+echo ${process_ids[12]}
+echo ${process_ids[13]}
+prc24s -nd  ${process_ids[0]} ${process_ids[1]} 
+
+echo " "
+echo "Non Direct Decendents"
+echo ${process_ids[14]}
+prc24s -nd  ${process_ids[0]} ${process_ids[2]} 
+
+prc24s -nd  ${process_ids[0]} ${process_ids[3]}  # no non direct decendents 
+prc24s -nd  ${process_ids[0]} ${process_ids[4]} # no non direct decendents 
+prc24s -nd 2 12 # no non direct descendants
+
+# # -dd
+# # prints pid of all immediate descendants of p
+
+# # negative test cases
+prc24s -dd 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Direct Decendents"
+echo ${process_ids[5]}
+echo ${process_ids[6]}
+echo ${process_ids[7]}
+prc24s -dd  ${process_ids[0]} ${process_ids[1]} 
+
+echo " "
+echo "Direct Decendents"
+echo ${process_ids[8]}
+echo ${process_ids[9]}
+prc24s -dd  ${process_ids[0]} ${process_ids[2]} 
+
+echo " "
+echo "Direct Decendents"
+echo ${process_ids[10]}
+prc24s -dd  ${process_ids[0]} ${process_ids[3]} 
+
+prc24s -dd  ${process_ids[0]} ${process_ids[4]} # no direct decendents
+prc24s -dd  ${process_ids[2]} ${process_ids[9]} # no direct decendents
+
+# # -gc
+
+# # negative test cases
+prc24s -gc 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Grand Children"
+echo ${process_ids[14]}
+
+prc24s -gc ${process_ids[0]} ${process_ids[2]}
+
+
+echo " "
+echo "Grand Children"
+echo ${process_ids[11]}
+echo ${process_ids[12]}
+echo ${process_ids[13]}
+
+prc24s -gc ${process_ids[0]} ${process_ids[1]}
+
+
+# # -sb
+# # prints siblings of the process id
+
+# # negative test cases
+prc24s -sb 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Sibling Processes"
+echo ${process_ids[2]}
+echo ${process_ids[3]}
+echo ${process_ids[4]}
+prc24s -sb  ${process_ids[0]} ${process_ids[1]} 
+
+echo " "
+echo "Sibling Processes"
+echo ${process_ids[1]}
+echo ${process_ids[3]}
+echo ${process_ids[4]}
+prc24s -sb  ${process_ids[0]} ${process_ids[2]} 
+
+echo " "
+echo "Sibling Processes"
+echo ${process_ids[1]}
+echo ${process_ids[2]}
+echo ${process_ids[4]}
+prc24s -sb  ${process_ids[0]} ${process_ids[3]} 
+
+echo " "
+echo "Sibling Processes"
+echo ${process_ids[6]}
+echo ${process_ids[7]}
+prc24s -sb  ${process_ids[0]} ${process_ids[5]} 
+
+prc24s -sb  ${process_ids[5]} ${process_ids[15]} # no siblings
+prc24s -sb  ${process_ids[8]} ${process_ids[14]} # no siblings
+
+
+# # -bz
+# # prints siblings of the process_id, who are zombies
+
+# # negative test cases
+prc24s -bz 1 2 # not rooted
+
+# positive test cases
+echo " "
+echo "Zombie Sibling Processes"
+echo ${process_ids[5]}
+echo ${process_ids[6]}
+prc24s -rp  ${process_ids[0]} ${process_ids[5]} # killing process p5 so that it will become a zombie
+prc24s -rp  ${process_ids[0]} ${process_ids[6]} # killing process p6 so that it will become a zombie
+sleep 1
+prc24s -bz  ${process_ids[0]} ${process_ids[7]} # will display p5, p6's pid
+
+echo " "
+echo "Zombie Sibling Processes"
+echo ${process_ids[4]}
+prc24s -rp  ${process_ids[0]} ${process_ids[4]} # killing process p4 so that it  will become a zombie
+sleep 1
+prc24s -bz  ${process_ids[0]} ${process_ids[2]} # will display p4's pid
+
+prc24s -bz  ${process_ids[2]} ${process_ids[8]} # no zombie siblings
+
+
+# # -zd
+# # Prints Zombie Descendents if any
+
+# # negative test cases
+prc24s -zd 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Zombie Descendent Processes"
+echo ${process_ids[8]}
+echo ${process_ids[9]}
+
+prc24s -rp ${process_ids[2]} ${process_ids[8]} # killing process p8 so that it will become a zombie
+prc24s -rp ${process_ids[2]} ${process_ids[9]} # killing process p9 so that it will become a zombie
+
+sleep 1 # sleeping so that changes will enact
+prc24s -zd ${process_ids[0]} ${process_ids[2]} 
+
+echo " "
+echo "Zombie Descendent Processes"
+echo ${process_ids[5]}
+echo ${process_ids[6]}
+# have already killed 5 & 6 before
+prc24s -zd ${process_ids[0]} ${process_ids[1]}  # will display p5, p6 as they are desendents of p1
+
+
+echo " "
+echo "Zombie Descendent Processes"
+echo ${process_ids[5]}
+echo ${process_ids[6]}
+echo ${process_ids[8]}
+echo ${process_ids[9]}
+echo ${process_ids[4]}
+prc24s -zd 6076 ${process_ids[0]}  # p3,p5,p6,p8,p9 # TODO: manually enter bash's ID
+
+prc24s -zd ${process_ids[0]} ${process_ids[3]} # no zombie descendents
+
+# # -sz
+# # print status of process id Defunct / Not Defunct
+
+# # negative test cases
+prc24s -sz 1 2 # not rooted
+
+# # positive test cases
+
+# zombie
+prc24s -sz ${process_ids[0]} ${process_ids[4]}
+prc24s -sz ${process_ids[0]} ${process_ids[5]}
+prc24s -sz ${process_ids[0]} ${process_ids[6]}
+prc24s -sz ${process_ids[0]} ${process_ids[8]}
+prc24s -sz ${process_ids[0]} ${process_ids[9]}
+
+# not zombie
+prc24s -sz ${process_ids[0]} ${process_ids[1]}
+prc24s -sz ${process_ids[0]} ${process_ids[2]}
+prc24s -sz ${process_ids[0]} ${process_ids[3]}
+
+# # -od
+# # Prints Orphan Descendents if any
+
+# # negative test cases
+prc24s -od 1 2 # not rooted
+
+# # positive test cases
+echo " "
+echo "Orphan Descendent Processes"
+echo ${process_ids[11]}
+echo ${process_ids[12]}
+echo ${process_ids[13]}
+echo ${process_ids[14]}
+
+prc24s -od 1 ${process_ids[0]} > orphans.txt # redirecting this output to a file orphans.txt and grepping required  
+sleep 1
+
+echo " " 
+cat orphans.txt | grep ${process_ids[11]}
+cat orphans.txt | grep ${process_ids[12]}
+cat orphans.txt | grep ${process_ids[13]}
+cat orphans.txt | grep ${process_ids[14]}
+
+prc24s -od ${process_ids[0]} ${process_ids[1]} # no orphan descendents
+
+
+# # -so
+# # print status of process id Orphan / Not Orphan
+
+# # negative test cases
+prc24s -so 1 2 # not rooted
+
+# # positive test cases
+
+# not orphan
+prc24s -so ${process_ids[0]} ${process_ids[1]} 
+prc24s -so ${process_ids[0]} ${process_ids[2]} 
+prc24s -so ${process_ids[0]} ${process_ids[3]} 
+prc24s -so ${process_ids[0]} ${process_ids[10]}
+
+# orphan
+prc24s -so 1 ${process_ids[11]}
+prc24s -so 1 ${process_ids[12]}
+prc24s -so 1 ${process_ids[13]}
+prc24s -so 1 ${process_ids[14]}

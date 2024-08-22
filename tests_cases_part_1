@@ -1,0 +1,129 @@
+#!=/bin/bash
+
+# PART 1 THE KILLING OF PROCESSES
+# options covered
+# -dx, -dt, -dc, -rp, -kz
+
+# # array
+process_ids=()
+i=0
+# read process_ids
+while read process_ids[$i]; do
+i=$((i+1))
+done < /home/damlet/Desktop/asp_assignment/assignment_2/ids.txt
+
+# -dx
+# send SIGKILL to all decendents of root
+
+# negative test cases
+prc24s -dx ${process_ids[2]} ${process_ids[7]} # not rooted
+prc24s -dx 2 12 # permission error
+
+# positive test cases
+echo " "
+echo "send SIGKILL"
+echo ${process_ids[8]}
+echo ${process_ids[9]}
+echo ${process_ids[14]}
+
+prc24s -dx ${process_ids[2]} ${process_ids[8]} # kills 3 processes, makes 2 zombies
+sleep 1
+
+ps -u  # will see 2 zombies
+
+echo " "
+echo "send SIGKILL"
+echo ${process_ids[10]}
+prc24s -dx ${process_ids[3]} ${process_ids[10]} # kills 1 process
+sleep 1
+ps -u   #  will see p10 as zombie too now
+
+# -dt
+# send SIGSTOP to all decendents of root 
+
+# negative test cases
+# prc24s -dt 2 12 # permission error
+prc24s -dt 1 2 # not rooted
+
+# positive test cases
+echo " "
+echo "send SIGSTOP"
+echo ${process_ids[11]}
+echo ${process_ids[12]}
+echo ${process_ids[15]}
+
+prc24s -dt ${process_ids[5]} ${process_ids[15]} # stops 3 process
+sleep 1
+ps -u  | grep T
+
+echo " "
+echo "send SIGSTOP"
+echo ${process_ids[13]}
+
+prc24s -dt ${process_ids[6]} ${process_ids[13]} # stops 1 process
+sleep 1
+ps -u  | grep T
+
+# -dc
+# send SIGCONT to root's all descendants
+
+# negative test cases
+# prc24s -dc 2 12 # permission error
+prc24s -dc 1 2 # not rooted
+
+# positive test cases
+echo " "
+echo "send SIGCONT"
+echo ${process_ids[11]}
+echo ${process_ids[12]}
+echo ${process_ids[15]}
+
+prc24s -dc ${process_ids[5]} ${process_ids[15]} # continues 3 process
+sleep 1
+ps -u 
+
+echo " "
+echo "send SIGCONT"
+echo ${process_ids[13]}
+
+prc24s -dc ${process_ids[6]} ${process_ids[13]} # continues 1 process 
+sleep 1
+ps -u 
+
+# -rp
+# Kills process id
+
+# negative test cases
+# prc24s -rp 2 12 # permission error
+prc24s -rp 1 2 # not rooted
+
+# positive test cases
+echo "Kill Process ID"
+echo ${process_ids[3]}
+echo ${process_ids[4]}
+
+prc24s -rp ${process_ids[0]} ${process_ids[3]} # kills 1 process
+prc24s -rp ${process_ids[0]} ${process_ids[4]} # kills 1 process
+sleep 1
+ps -u
+
+# # -kz
+# # kills parents of all zombie children of given process_id including process_id if it's children are zombies
+
+# negative test cases
+# prc24s -kz 2 12 # permission error
+prc24s -kz 1 2 # not rooted
+
+# positive test cases
+
+# uptil now 3,4,8,9 processes have become zombies, let's kill their parents 
+prc24s -kz 1 ${process_ids[0]}
+
+# clean up 
+
+# sending sigint to delete ids.txt,
+#delete ids.txt, it'll only delete itself if SIGINT is send to it's parent but Since I'm not a root I can't send it to 1(systemd)
+rm /home/damlet/Desktop/asp_assignment/assignment_2/ids.txt
+
+prc24s -dx ${process_ids[1]} ${process_ids[5]} # kill all descendants of 1
+prc24s -rp 1 ${process_ids[1]}  # kill 1 itself

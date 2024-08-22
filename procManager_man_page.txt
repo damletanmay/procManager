@@ -1,0 +1,51 @@
+procManager(1)                                          Manage Processes                                        procManager(1)
+
+NAME
+       procManager- Manage Processes  
+
+SYNOPSIS
+       procManager [ -nd | -dd | -gc | -sb | -bz | -zd | -od | -so | -sz ] <root_process> <process_id> # Lists Process IDS 
+       procManager [ -dx | -dt | -dc | - rp | - kz] <root_process> <process_id> # Kills Process IDS
+
+DESCRIPTION
+
+       prc24s is program written in C by Tanmay Damle. The purpose of this program is to manage processes in Linux.
+       Using an option one can perform various options however it is optional to provide an option and when option 
+       is not provided program simply prints the process id and parent process id of a given process_id.
+       <root_process> and <process_id> should be valid process ids of actual existing process in a system
+
+
+   Options
+
+       -nd     Lists non direct descendants of a given <process_id>
+       
+       -dd     Lists non direct descendants of a given <process_id>
+       
+       -gc     Lists grandchildren of a given <process_id>
+
+       -sb     Lists process ids of siblings of a given <process_id>
+
+       -bz     Lists process ids of siblings who are defunct(zombies) of a given <process_id>
+
+       -zd     Lists process ids of all descendants who are defunct(zombies) of a given <process_id>
+       
+       -od     Lists process ids of all descendants who are orphans of a given <process_id>
+       
+       -so     Lists the status of a given <process_id> whether it is Orphan / Not Orphan
+
+       -sz     Lists the status of a given <process_id> whether it is Defunct / Not Defunct
+       
+       -dx     Kills all the descendants of a given <root_process>
+       
+       -dt     Sends SIGSTOP all the descendants of a given <root_process>
+       
+       -dc     Sends SIGCONT all the descendants of a given <root_process>
+       
+       -rp     Kills <process_id>
+       
+       -kz     Kills the parents of all zombie processes that are descendants of a given <process_id> including itself if required
+
+
+BUGS
+       No known bugs, but there always are bugs, please contact me if you find any
+                                                        2024 June 23                                            procManager(1)
