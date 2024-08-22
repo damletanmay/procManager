@@ -10,9 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// this code can be found in /home/damlet/Desktop/asp_assignment/assignment_2/prc24s_tanmay_damle_SID.c
-// there's a compile script written use bash compile_a1 and bash tests_a2 to compile and test the program
-// executable prc24s is already put in the $PATH so that it can be run from anywhere
+// put executable procManager in the $PATH so that it can be run from anywhere
 
 //  global constants
 #define MIN_ARGS 3

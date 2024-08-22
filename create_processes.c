@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
-const char *file_path = "/home/damlet/Desktop/asp_assignment/assignment_2/ids.txt"; // file path
+const char *file_path = "ids.txt"; // file path
 int fd;                                                                             // file descriptor which will be shared
 
 // signal handler for sigint which will remove the file and exit

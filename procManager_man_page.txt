@@ -9,7 +9,7 @@ SYNOPSIS
 
 DESCRIPTION
 
-       prc24s is program written in C by Tanmay Damle. The purpose of this program is to manage processes in Linux.
+       procManager is program written in C by Tanmay Damle. The purpose of this program is to manage processes in Linux.
        Using an option one can perform various options however it is optional to provide an option and when option 
        is not provided program simply prints the process id and parent process id of a given process_id.
        <root_process> and <process_id> should be valid process ids of actual existing process in a system
